@@ -1,10 +1,22 @@
-@font-face {
+/* @font-face {
     font-weight: normal;
     font-style: normal;
+} */
+
+:root[color-theme='light'] {
+    --background: #ffffff;
+    --font: #000;
+}
+
+:root[color-theme='dark'] {
+    --background: #000;
+    --font: #ffffff;
 }
 
 html {
     box-sizing: border-box;
+    background-color: var(--background);
+    color: var(--font);
 }
 
 body * {
@@ -37,10 +49,26 @@ body * {
 }
 
 .SearchResult .item {
-    background-color: #eee;
+    background-color: var(--background);
     display: inline-block;
     margin: 0 0 1em;
     width: 100%;
+}
+
+.themeButtonWrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+input[id='theme-button'] {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+label[for='theme-button'] {
+    font-size: 1.2em;
+    margin-right: 0.2rem;
 }
 
 .InputWrapper {
@@ -94,7 +122,7 @@ body * {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    background-color: #fff;
+    background-color: var(--background);
     border: 1px solid #eee;
     border-radius: 5px;
 }
@@ -154,16 +182,7 @@ body * {
     }
 }
 
-/* dark mode 처리
-  @media (prefers-color-scheme: dark) {
-    body {
-      background-color: #000;
-      color: white;
-    }
-  }
-  *?
-  
-  /* Make SearchResult responsive */
+/* Make SearchResult responsive */
 @media screen and (max-width: 992px) {
     .SearchResult {
         grid-template-columns: repeat(3, minmax(250px, 1fr));

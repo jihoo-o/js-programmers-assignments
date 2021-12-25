@@ -1,11 +1,10 @@
-class SearchResult {
+export default class SearchResult {
     $searchResult = null;
     data = null;
     init = true;
     onClick = null;
 
     constructor({ $target, initialData, onClick }) {
-        // this.$searchResult = document.createElement("div");
         this.$searchResult = document.createElement('section');
         this.$searchResult.className = 'SearchResult';
         $target.appendChild(this.$searchResult);

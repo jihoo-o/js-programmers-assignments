@@ -1,23 +1,31 @@
+import Header from './components/Header/Header.js';
+import SearchResult from './components/SearchResult.js';
+import ImageInfo from './components/ImageInfo.js';
+import LoadingSpinner from './components/LoadingSpinner.js';
+import api from './service/api.js';
+
 console.log('app is running!');
 
-class App {
+export default class App {
     $target = null;
     data = [];
 
     constructor($target) {
         this.$target = $target;
 
-        this.searchInput = new SearchInput({
+        this.header = new Header({
             $target,
-            onSearch: async (keyword) => {
+            onSearch: (keyword) => {
                 this.loadingSpinner.setState(true);
 
-                api.fetchCats(keyword).then(({ data }) => this.setState(data));
+                api.fetchCats(keyword) //
+                    .then(({ data }) => this.setState(data));
             },
             onRandomSearch: () => {
                 this.loadingSpinner.setState(true);
 
-                api.fetchRandomCats().then(({ data }) => this.setState(data));
+                api.fetchRandomCats() //
+                    .then(({ data }) => this.setState(data));
             },
         });
 
@@ -45,7 +53,6 @@ class App {
 
     setState(nextData) {
         this.loadingSpinner.setState(false);
-
         this.data = nextData;
         this.searchResult.setState(nextData);
     }

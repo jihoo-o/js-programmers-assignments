@@ -1,4 +1,4 @@
-class LoadingSpinner {
+export default class LoadingSpinner {
     $loadingSpinner = null;
     loading = false;
 
