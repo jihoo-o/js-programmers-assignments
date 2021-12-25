@@ -11,7 +11,7 @@ export default class SearchInput {
         this.$searchInput.placeholder = '고양이를 검색해보세요.|';
         this.$searchInput.className = 'SearchInput';
 
-        this.$searchInput.addEventListener('keyup', (e) => {
+        this.$searchInput.addEventListener('keypress', (e) => {
             if (e.code === 'Enter') {
                 onSearch(e.target.value);
             }

@@ -1,5 +1,6 @@
 import { $ } from '../../utils/selector.js';
 import RandomButton from './RandomButton.js';
+import SearchHistory from './SearchHistory.js';
 import SearchInput from './SearchInput.js';
 import ThemeButton from './ThemeButton.js';
 
@@ -7,6 +8,7 @@ export default class Header {
     $target = null;
     $header = null;
     $inputWrapper = null;
+    keyword = null;
 
     constructor({ $target, onSearch, onRandomSearch }) {
         this.$target = $target;
@@ -20,7 +22,10 @@ export default class Header {
 
         this.searchInput = new SearchInput({
             $inputWrapper: this.$inputWrapper,
-            onSearch,
+            onSearch: (keyword) => {
+                onSearch(keyword);
+                this.setState(keyword);
+            },
         });
 
         this.randomButton = new RandomButton({
@@ -28,7 +33,18 @@ export default class Header {
             onRandomSearch,
         });
 
-        this.$target.appendChild(this.$header);
         this.$header.appendChild(this.$inputWrapper);
+
+        this.searchHistory = new SearchHistory({
+            $header: this.$header,
+        });
+
+        this.$target.appendChild(this.$header);
+    }
+
+    // keyword 변경을 SearchInput -> SearchHistory에 알려줌
+    setState(searchedKeyword) {
+        this.keyword = searchedKeyword;
+        this.searchHistory.add(this.keyword);
     }
 }

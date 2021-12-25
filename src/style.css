@@ -98,6 +98,26 @@ label[for='theme-button'] {
     cursor: pointer;
 }
 
+.SearchHistory {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    margin: 1rem 0;
+    padding-left: 0;
+}
+
+.searchKeyword {
+    background: rgba(128, 128, 128, 0.5);
+    padding: 0.3rem 0.5rem;
+    border-radius: 0.5rem;
+    margin-right: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.searchKeyword:hover {
+    cursor: pointer;
+}
+
 .ImageInfo {
     position: fixed;
     left: 0;
