@@ -1,6 +1,6 @@
 import { $ } from '../../utils/selector.js';
 
-const LOCALSTORAGE_KEY = 'SEARCH_HISTORY';
+const SEARCH_HISTORY_KEY = 'SEARCH_HISTORY';
 
 export default class SearchHistory {
     $target = null;
@@ -22,11 +22,11 @@ export default class SearchHistory {
         this.render();
     }
 
-    add(searchedKeyword) {
+    addKeyword(searchedKeyword) {
         const key = Date.now();
         const keys = Object.keys(this.searchHistory);
         if (keys.length >= 5) {
-            this.delete(keys.pop());
+            this.deleteKeyword(keys.pop());
         }
         const updatedSearchHistory = {
             [key]: searchedKeyword,
@@ -35,7 +35,7 @@ export default class SearchHistory {
         this.setState(updatedSearchHistory);
     }
 
-    delete(deleteId) {
+    deleteKeyword(deleteId) {
         const updatedSearchHistory = { ...this.searchHistory };
         delete updatedSearchHistory[deleteId];
         this.setState(updatedSearchHistory);
@@ -43,13 +43,13 @@ export default class SearchHistory {
 
     saveToLocalstorage() {
         localStorage.setItem(
-            LOCALSTORAGE_KEY,
+            SEARCH_HISTORY_KEY,
             JSON.stringify(this.searchHistory)
         );
     }
 
     loadLocalstorage() {
-        return JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || {};
+        return JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY)) || {};
     }
 
     render() {

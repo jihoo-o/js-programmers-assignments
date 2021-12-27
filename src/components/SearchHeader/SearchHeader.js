@@ -8,9 +8,8 @@ export default class Header {
     $target = null;
     $header = null;
     $inputWrapper = null;
-    keyword = null;
 
-    constructor({ $target, onSearch, onRandomSearch }) {
+    constructor({ $target, initialKeyword, onSearch, onRandomSearch }) {
         this.$target = $target;
         this.$header = $('header');
         this.$inputWrapper = $('div');
@@ -22,9 +21,10 @@ export default class Header {
 
         this.searchInput = new SearchInput({
             $inputWrapper: this.$inputWrapper,
+            initialKeyword,
             onSearch: (keyword) => {
                 onSearch(keyword);
-                this.setState(keyword);
+                this.searchHistory.addKeyword(keyword);
             },
         });
 
@@ -40,11 +40,5 @@ export default class Header {
         });
 
         this.$target.appendChild(this.$header);
-    }
-
-    // keyword 변경을 SearchInput -> SearchHistory에 알려줌
-    setState(searchedKeyword) {
-        this.keyword = searchedKeyword;
-        this.searchHistory.add(this.keyword);
     }
 }
