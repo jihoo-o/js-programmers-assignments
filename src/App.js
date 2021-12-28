@@ -20,12 +20,7 @@ export default class App {
         this.searchHeader = new SearchHeader({
             $target,
             initialKeyword: this.keyword,
-            onSearch: (keyword) => {
-                this.loadingSpinner.setState(true);
-                this.keyword = keyword; //
-                api.fetchCats(keyword) //
-                    .then(({ data }) => this.setState(data));
-            },
+            onSearch: this.handleSearch.bind(this),
             onRandomSearch: () => {
                 this.loadingSpinner.setState(true);
                 this.keyword = '랜덤검색';
@@ -43,6 +38,7 @@ export default class App {
                     image,
                 });
             },
+            addItems: this.handleSearch.bind(this),
         });
 
         this.imageInfo = new ImageInfo({
@@ -60,6 +56,15 @@ export default class App {
         const { keyword, data } = this.loadSessionstorage();
         this.keyword = keyword;
         this.data = data;
+    }
+
+    handleSearch(keyword) {
+        this.loadingSpinner.setState(true);
+        if (keyword) {
+            this.keyword = keyword;
+        }
+        api.fetchCats(keyword || this.keyword) //
+            .then(({ data }) => this.setState(data));
     }
 
     saveToSessionstorage(keyword, data) {

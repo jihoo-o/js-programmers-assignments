@@ -21,6 +21,7 @@ export default class LoadingSpinner {
     }
 
     render() {
+        /**change it to the way the class(hidden) is used*/
         if (this.loading) {
             this.$loadingSpinner.style.display = 'block';
         } else {
