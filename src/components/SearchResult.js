@@ -1,7 +1,7 @@
 export default class SearchResult {
     $searchResult = null;
-    $observingItem = null;
-    observer = null;
+    infiniteScrollObserver = null;
+    lazyLoadObserver = null;
     data = null;
     init = true;
     onClick = null;
@@ -14,6 +14,9 @@ export default class SearchResult {
         this.data = initialData;
         this.infiniteScrollObserver = new IntersectionObserver(
             this.handleInfiniteScroll.bind(this)
+        );
+        this.lazyLoadObserver = new IntersectionObserver(
+            this.handleLazyLoad.bind(this)
         );
         this.onClick = onClick;
         this.addItems = addItems;
@@ -30,7 +33,18 @@ export default class SearchResult {
     handleInfiniteScroll(entries) {
         entries.forEach((entry) => {
             if (entry.isIntersecting) {
+                this.unobserve(this.infiniteScrollObserver, entry.target);
                 this.addItems();
+            }
+        });
+    }
+
+    handleLazyLoad(entries) {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                const image = entry.target;
+                image.src = image.dataset.src;
+                this.unobserve(this.lazyLoadObserver, image);
             }
         });
     }
@@ -50,21 +64,20 @@ export default class SearchResult {
                 const { url, name } = data;
                 const newItem = document.createElement('div');
                 newItem.classList.add('item');
-                newItem.innerHTML = `<img src=${url} alt=${name} loading='lazy'/>`;
+                const img = document.createElement('img');
+                img.setAttribute('data-src', url);
+                img.setAttribute('alt', name);
+                newItem.appendChild(img);
                 this.$searchResult.appendChild(newItem);
                 if (index === Math.floor(this.data.length / 2)) {
-                    if (this.$observingItem) {
-                        this.unobserve(
-                            this.infiniteScrollObserver,
-                            this.$observingItem
-                        );
-                    }
                     this.observe(this.infiniteScrollObserver, newItem);
                 }
 
                 newItem.addEventListener('click', () => {
                     this.onClick(this.data[index]);
                 });
+
+                this.observe(this.lazyLoadObserver, img);
             });
         } else if (!this.init) {
             this.$searchResult.innerHTML = '검색된 데이터가 없습니다.';
