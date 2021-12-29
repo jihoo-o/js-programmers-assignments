@@ -1,3 +1,9 @@
+const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 1.0,
+};
+
 export default class SearchResult {
     $searchResult = null;
     infiniteScrollObserver = null;
@@ -13,10 +19,12 @@ export default class SearchResult {
 
         this.data = initialData;
         this.infiniteScrollObserver = new IntersectionObserver(
-            this.handleInfiniteScroll.bind(this)
+            this.handleInfiniteScroll.bind(this),
+            observerOptions
         );
         this.lazyLoadObserver = new IntersectionObserver(
-            this.handleLazyLoad.bind(this)
+            this.handleLazyLoad.bind(this),
+            observerOptions
         );
         this.onClick = onClick;
         this.addItems = addItems;

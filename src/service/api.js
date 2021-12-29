@@ -9,7 +9,7 @@ const api = {
             );
 
             if (!res.ok) {
-                throw new Error('Error occured on fetchCats');
+                throw new Error(res.status);
             }
             return await res.json();
         } catch (e) {
