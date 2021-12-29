@@ -55,10 +55,14 @@ export default class App {
 
     async handleSearch(keyword) {
         this.loadingSpinner.setState(true);
-        this.keyword = keyword;
         try {
-            const { data } = await api.fetchCats(this.keyword);
-            this.setState(data);
+            const { data } = keyword
+                ? await api.fetchCats(keyword)
+                : await api.fetchCats(this.keyword);
+            this.setState({
+                data,
+                keyword: keyword || this.keyword,
+            });
         } catch (e) {
             if (e.message === '400') {
                 window.alert('키워드를 입력해 주세요.');
@@ -72,13 +76,15 @@ export default class App {
 
     async handleRandomSearch() {
         this.loadingSpinner.setState(true);
-        this.keyword = '랜덤검색';
         try {
             const { data } = await api.fetchRandomCats();
-            this.setState(data);
+            this.setState({
+                data,
+                keyword: '랜덤 검색',
+            });
         } catch (e) {
             if (e.message === '500') {
-                this.handleSearch();
+                this.handleRandomSearch();
             }
         }
     }
@@ -102,10 +108,16 @@ export default class App {
         );
     }
 
-    setState(nextData) {
+    setState(nextState) {
         this.loadingSpinner.setState(false);
-        this.data = nextData;
-        this.searchResult.setState(nextData);
+        if (nextState.keyword === this.keyword) {
+            this.data = [...this.data, ...nextState.data];
+        } else {
+            this.searchResult.removeAll();
+            this.data = [...nextState.data];
+        }
+        this.keyword = nextState.keyword;
+        this.searchResult.setState(this.data);
         this.saveToSessionstorage(this.keyword, this.data);
     }
 }

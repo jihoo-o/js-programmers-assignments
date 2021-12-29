@@ -6,6 +6,7 @@ const observerOptions = {
 
 export default class SearchResult {
     $searchResult = null;
+    $noResult = null;
     infiniteScrollObserver = null;
     lazyLoadObserver = null;
     data = null;
@@ -15,7 +16,13 @@ export default class SearchResult {
     constructor({ $target, initialData, onClick, addItems }) {
         this.$searchResult = document.createElement('section');
         this.$searchResult.classList.add('SearchResult');
+
+        this.$noResult = document.createElement('h1');
+        this.$noResult.innerText = '검색된 데이터가 없습니다.';
+        this.$noResult.classList.add('display-none');
+
         $target.appendChild(this.$searchResult);
+        this.$searchResult.appendChild(this.$noResult);
 
         this.data = initialData;
         this.infiniteScrollObserver = new IntersectionObserver(
@@ -66,8 +73,14 @@ export default class SearchResult {
         observer.unobserve(target);
     }
 
+    removeAll() {
+        this.$searchResult.innerHTML = '';
+        this.$searchResult.appendChild(this.$noResult);
+    }
+
     render() {
         if (this.data && this.data.length !== 0) {
+            this.$noResult.classList.add('display-none');
             this.data.forEach((data, index) => {
                 const { url, name } = data;
                 const newItem = document.createElement('div');
@@ -84,11 +97,11 @@ export default class SearchResult {
                 newItem.addEventListener('click', () => {
                     this.onClick(this.data[index]);
                 });
-
                 this.observe(this.lazyLoadObserver, img);
             });
         } else if (!this.init) {
-            this.$searchResult.innerHTML = '검색된 데이터가 없습니다.';
+            this.removeAll();
+            this.$noResult.classList.remove('display-none');
         }
     }
 }

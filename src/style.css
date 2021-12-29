@@ -55,6 +55,10 @@ body * {
     width: 100%;
 }
 
+.display-none {
+    display: none;
+}
+
 .themeButtonWrapper {
     display: flex;
     align-items: center;
