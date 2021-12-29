@@ -1,9 +1,3 @@
-const observerOptions = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 1.0,
-};
-
 export default class SearchResult {
     $searchResult = null;
     $observingItem = null;
@@ -18,9 +12,8 @@ export default class SearchResult {
         $target.appendChild(this.$searchResult);
 
         this.data = initialData;
-        this.observer = new IntersectionObserver(
-            this.handleObserver.bind(this),
-            observerOptions
+        this.infiniteScrollObserver = new IntersectionObserver(
+            this.handleInfiniteScroll.bind(this)
         );
         this.onClick = onClick;
         this.addItems = addItems;
@@ -34,7 +27,7 @@ export default class SearchResult {
         this.render();
     }
 
-    handleObserver(entries) {
+    handleInfiniteScroll(entries) {
         entries.forEach((entry) => {
             if (entry.isIntersecting) {
                 this.addItems();
@@ -42,13 +35,13 @@ export default class SearchResult {
         });
     }
 
-    observe(newTarget) {
+    observe(observer, newTarget) {
         this.$observingItem = newTarget;
-        this.observer.observe(newTarget);
+        observer.observe(newTarget);
     }
 
-    unobserve() {
-        this.observer.unobserve(this.$observingItem);
+    unobserve(observer, target) {
+        observer.unobserve(target);
     }
 
     render() {
@@ -57,13 +50,16 @@ export default class SearchResult {
                 const { url, name } = data;
                 const newItem = document.createElement('div');
                 newItem.classList.add('item');
-                newItem.innerHTML = `<img src=${url} alt=${name} />`;
+                newItem.innerHTML = `<img src=${url} alt=${name} loading='lazy'/>`;
                 this.$searchResult.appendChild(newItem);
                 if (index === Math.floor(this.data.length / 2)) {
                     if (this.$observingItem) {
-                        this.unobserve();
+                        this.unobserve(
+                            this.infiniteScrollObserver,
+                            this.$observingItem
+                        );
                     }
-                    this.observe(newItem);
+                    this.observe(this.infiniteScrollObserver, newItem);
                 }
 
                 newItem.addEventListener('click', () => {
