@@ -11,13 +11,17 @@ export default class Nodes {
         $app.appendChild(this.$target);
 
         this.$target.addEventListener('click', (e) => {
-            const node = e.target.closest('.Node');
-            if (!node) return;
-            if (node.classList.contains('Prev')) {
+            const $node = e.target.closest('.Node');
+            if (!$node) return;
+            if ($node.classList.contains('Prev')) {
                 onPrevClick();
-            } else {
-                onNodeClick(parseInt(node.dataset.id));
+                return;
             }
+            const { id } = $node.dataset;
+            const selectedNode = this.state.nodes.find(
+                (node) => node.id === id
+            );
+            onNodeClick(selectedNode);
         });
 
         this.render();
@@ -42,12 +46,12 @@ export default class Nodes {
             .map((node) => {
                 switch (node.type) {
                     case DIRECTORY:
-                        return `<div class="Node" data-id=${node.id}>
+                        return `<div class="Node" data-id="${node.id}">
                                     <img src="./assets/directory.png" />
                                     <div>${node.name}</div>
                                 </div>`;
                     case FILE:
-                        return `<div class="Node" data-id=${node.id}>
+                        return `<div class="Node" data-id="${node.id}">
                                     <img src="./assets/file.png" />
                                     <div>${node.name}</div>
                                 </div>`;
