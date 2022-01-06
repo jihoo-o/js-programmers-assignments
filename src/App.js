@@ -25,7 +25,8 @@ export default class App {
                 isRoot: this.state.isRoot,
                 nodes: this.state.nodes,
             },
-            getNextNode: this.getNextNodes,
+            onNodeClick: this.getNextNodes,
+            onPrevClick: this.getPrevNodes,
         });
     }
 
@@ -47,7 +48,6 @@ export default class App {
         });
     };
 
-    // param: nodeId -> node
     getNextNodes = async (nodeId) => {
         const nextNodes = await api.getNodes(nodeId);
         const node = this.state.nodes.find(
@@ -62,6 +62,7 @@ export default class App {
     };
 
     getPrevNodes = async () => {
+        const nodeId = this.state.path[this.state.path.length - 2];
         const prevNodes = await api.getNodes(nodeId);
         this.setState({
             ...this.state,

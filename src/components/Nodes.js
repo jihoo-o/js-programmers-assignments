@@ -3,15 +3,22 @@ const DIRECTORY = 'DIRECTORY';
 const FILE = 'FILE';
 
 export default class Nodes {
-    constructor({ $app, initialState, getNextNode }) {
+    constructor({ $app, initialState, onNodeClick, onPrevClick }) {
         this.state = initialState;
-        this.getNextNode = getNextNode;
 
         this.$target = document.createElement('div');
         this.$target.classList.add('Nodes');
         $app.appendChild(this.$target);
 
-        this.$target.addEventListener('click', this.handleNodeClick);
+        this.$target.addEventListener('click', (e) => {
+            const node = e.target.closest('.Node');
+            if (!node) return;
+            if (node.classList.contains('Prev')) {
+                onPrevClick();
+            } else {
+                onNodeClick(parseInt(node.dataset.id));
+            }
+        });
 
         this.render();
     }
@@ -21,16 +28,17 @@ export default class Nodes {
         this.render();
     }
 
-    handleNodeClick = (e) => {
-        const node = e.target.closest('.Node');
-        if (!node) return;
-        const nodeId = parseInt(node.dataset.id);
-        this.getNextNode(nodeId);
-    };
-
     render() {
-        // isRoot ? render previous
-        this.$target.innerHTML = this.state.nodes
+        this.$target.innerHTML = `
+        ${
+            !this.state.isRoot
+                ? `
+        <div class="Node Prev">
+        <img src="./assets/prev.png" />
+        </div>`
+                : ''
+        }
+        ${this.state.nodes
             .map((node) => {
                 switch (node.type) {
                     case DIRECTORY:
@@ -45,6 +53,6 @@ export default class Nodes {
                                 </div>`;
                 }
             })
-            .join('');
+            .join('')}`;
     }
 }
