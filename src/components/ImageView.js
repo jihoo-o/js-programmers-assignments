@@ -1,24 +1,32 @@
-// export default class ImageView {
-//     constructor({ $app, initialState }) {
-//         this.$target = document.createElement('div');
-//         this.$target.classList.add('Modal');
-//         this.$target.classList.add('ImageViewr');
-//         $app.appendChild($target);
+const IMAGE_PATH_PREFIX =
+    'https://fe-dev-matching-2021-03-serverlessdeploymentbuck-t3kpj3way537.s3.ap-northeast-2.amazonaws.com/public/';
 
-//         this.state = initialState;
+export default class ImageView {
+    constructor({ $app, initialState }) {
+        this.state = initialState;
+        this.$target = document.createElement('div');
+        this.$target.classList.add('Modal');
+        this.$target.classList.add('ImageViewr');
 
-//         this.render();
-//     }
+        $app.appendChild(this.$target);
 
-//     setState(nextState) {
-//         this.state = nextState;
-//         this.render();
-//     }
+        this.render();
+    }
 
-//     render() {
-//         //     <div class="Modal ImageViewer">
-//         //   <div class="content">
-//         //     <img src="./assets/sample_image.jpg">
-//         // </div>
-//     }
-// }
+    setState(nextState) {
+        this.state = nextState;
+        this.render();
+    }
+
+    render() {
+        this.$target.innerHTML = `
+            <div class="content">
+                ${
+                    this.state
+                        ? `<img src="${IMAGE_PATH_PREFIX}${this.state}">`
+                        : ''
+                }
+            </div>`;
+        this.$target.style.display = this.state ? 'block' : 'none';
+    }
+}

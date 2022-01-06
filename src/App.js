@@ -1,5 +1,6 @@
 import Breadcrumb from './components/Breadcrumb.js';
 import Nodes from './components/Nodes.js';
+import ImageView from './components/ImageView.js';
 import api from './service/api.js';
 
 // node types
@@ -33,6 +34,11 @@ export default class App {
             onNodeClick: this.handleNodeClick,
             onPrevClick: this.getPrevNodes,
         });
+
+        this.ImageView = new ImageView({
+            $app,
+            initialState: this.state.selectedFilePath,
+        });
     }
 
     setState(nextState) {
@@ -42,9 +48,7 @@ export default class App {
             isRoot: this.state.isRoot,
             nodes: this.state.nodes,
         });
-        // this.ImageView.setState({
-        //     selectedFilePath: this.state.selectedFilePath,
-        // });
+        this.ImageView.setState(this.state.selectedFilePath);
     }
 
     init = async () => {
@@ -62,7 +66,7 @@ export default class App {
                 this.getNextNodes(node);
                 return;
             case FILE:
-                // this.showImage(node.filePath);
+                this.showImage(node.filePath);
                 return;
         }
     };
@@ -90,10 +94,10 @@ export default class App {
         });
     };
 
-    // showImage = (selectedFilePath) => {
-    //     this.setState({
-    //         ...this.state,
-    //         selectedFilePath,
-    //     });
-    // };
+    showImage = (selectedFilePath) => {
+        this.setState({
+            ...this.state,
+            selectedFilePath: selectedFilePath[0] === '/' ? selectedFilePath.slice(1) : selectedFilePath,
+        });
+    };
 }
