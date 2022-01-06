@@ -38,6 +38,13 @@ export default class App {
         this.ImageView = new ImageView({
             $app,
             initialState: this.state.selectedFilePath,
+            onModalClick: this.closeFileImage,
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.key === 'Escape') {
+                this.closeFileImage();
+            }
         });
     }
 
@@ -66,7 +73,7 @@ export default class App {
                 this.getNextNodes(node);
                 return;
             case FILE:
-                this.showImage(node.filePath);
+                this.showFileImage(node.filePath);
                 return;
         }
     };
@@ -94,10 +101,20 @@ export default class App {
         });
     };
 
-    showImage = (selectedFilePath) => {
+    showFileImage = (selectedFilePath) => {
         this.setState({
             ...this.state,
-            selectedFilePath: selectedFilePath[0] === '/' ? selectedFilePath.slice(1) : selectedFilePath,
+            selectedFilePath:
+                selectedFilePath[0] === '/'
+                    ? selectedFilePath.slice(1)
+                    : selectedFilePath,
+        });
+    };
+
+    closeFileImage = () => {
+        this.setState({
+            ...this.state,
+            selectedFilePath: null,
         });
     };
 }
