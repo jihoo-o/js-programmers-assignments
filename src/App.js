@@ -25,6 +25,7 @@ export default class App {
                 isRoot: this.state.isRoot,
                 nodes: this.state.nodes,
             },
+            getNextNode: this.getNextNodes,
         });
     }
 
@@ -37,12 +38,38 @@ export default class App {
         });
     }
 
-    async init() {
+    init = async () => {
         const rootNodes = await api.getNodes();
         this.setState({
             ...this.state,
             isRoot: true,
             nodes: rootNodes,
         });
-    }
+    };
+
+    // param: nodeId -> node
+    getNextNodes = async (nodeId) => {
+        const nextNodes = await api.getNodes(nodeId);
+        const node = this.state.nodes.find(
+            (node) => parseInt(node.id) === nodeId
+        );
+        this.setState({
+            ...this.state,
+            path: [...this.state.path, node],
+            isRoot: false,
+            nodes: nextNodes,
+        });
+    };
+
+    getPrevNodes = async () => {
+        const prevNodes = await api.getNodes(nodeId);
+        this.setState({
+            ...this.state,
+            path: this.state.path.filter(
+                (node, idx) => idx !== this.state.path.length - 1
+            ),
+            isRoot: this.state.path.length === 1 ? true : false,
+            nodes: prevNodes,
+        });
+    };
 }
