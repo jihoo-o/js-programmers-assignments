@@ -8,6 +8,8 @@ import api from './service/api.js';
 const DIRECTORY = 'DIRECTORY';
 const FILE = 'FILE';
 
+const cache = {};
+
 export default class App {
     state = {
         isRoot: true,
@@ -82,7 +84,14 @@ export default class App {
                 ...this.state,
                 isLoading: true,
             });
-            return await api.requestNodes(nodeId);
+
+            if (cache[nodeId || 'root']) {
+                return cache[nodeId || 'root'];
+            } else {
+                const nodes = await api.requestNodes(nodeId);
+                cache[nodeId || 'root'] = nodes;
+                return nodes;
+            }
         } catch (e) {
             console.error(e.message);
         } finally {
@@ -115,12 +124,11 @@ export default class App {
     };
 
     // go back to: this.state.path[length - 1 - n]
+    // n = 0: 현위치
+    // n = null: root
     getPrevNodes = async (n) => {
-        n = n ? n : this.state.path.length;
-        const nextPath = this.state.path.slice(
-            0,
-            this.state.path.length - 1 - n
-        );
+        n = n === null ? this.state.path.length : n;
+        const nextPath = this.state.path.slice(0, this.state.path.length - n);
         const selectedNode =
             nextPath.length > 0 ? nextPath[nextPath.length - 1] : null;
         const nextNodes = await this.getNodes(

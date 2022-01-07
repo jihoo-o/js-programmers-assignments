@@ -11,7 +11,7 @@ export default class Breadcrumb {
             if (!clickedPath) return;
             const { idx } = clickedPath.dataset;
             onPathClick(
-                idx ? this.state.path.length - parseInt(idx) + 1 : null
+                idx ? this.state.path.length - parseInt(idx) - 1 : null
             );
         });
 
