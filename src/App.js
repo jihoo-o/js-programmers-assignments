@@ -1,6 +1,7 @@
 import Breadcrumb from './components/Breadcrumb.js';
 import Nodes from './components/Nodes.js';
 import ImageView from './components/ImageView.js';
+import Loading from './components/Loading.js';
 import api from './service/api.js';
 
 // node types
@@ -13,11 +14,10 @@ export default class App {
         nodes: [],
         path: [],
         selectedFilePath: null,
+        isLoading: false,
     };
 
     constructor($app) {
-        this.init();
-
         this.breadcrumb = new Breadcrumb({
             $app,
             initialState: {
@@ -42,11 +42,18 @@ export default class App {
             onModalClick: this.closeFileImage,
         });
 
+        this.Loading = new Loading({
+            $app,
+            initialState: this.state.isLoading,
+        });
+
         window.addEventListener('keyup', (e) => {
             if (e.key === 'Escape') {
                 this.closeFileImage();
             }
         });
+
+        this.init();
     }
 
     setState(nextState) {
@@ -57,15 +64,33 @@ export default class App {
             nodes: this.state.nodes,
         });
         this.ImageView.setState(this.state.selectedFilePath);
+        this.Loading.setState(this.state.isLoading);
     }
 
     init = async () => {
-        const rootNodes = await api.getNodes();
+        const rootNodes = await this.getNodes();
         this.setState({
             ...this.state,
             isRoot: true,
             nodes: rootNodes,
         });
+    };
+
+    getNodes = async (nodeId) => {
+        try {
+            this.setState({
+                ...this.state,
+                isLoading: true,
+            });
+            return await api.requestNodes(nodeId);
+        } catch (e) {
+            console.error(e.message);
+        } finally {
+            this.setState({
+                ...this.state,
+                isLoading: false,
+            });
+        }
     };
 
     handleNodeClick = (node) => {
@@ -80,7 +105,7 @@ export default class App {
     };
 
     getNextNodes = async (node) => {
-        const nextNodes = await api.getNodes(node.id);
+        const nextNodes = await this.getNodes(node.id);
         this.setState({
             ...this.state,
             path: [...this.state.path, node],
@@ -89,7 +114,7 @@ export default class App {
         });
     };
 
-    // go back to: length - 1 - n
+    // go back to: this.state.path[length - 1 - n]
     getPrevNodes = async (n) => {
         n = n ? n : this.state.path.length;
         const nextPath = this.state.path.slice(
@@ -98,7 +123,7 @@ export default class App {
         );
         const selectedNode =
             nextPath.length > 0 ? nextPath[nextPath.length - 1] : null;
-        const nextNodes = await api.getNodes(
+        const nextNodes = await this.getNodes(
             selectedNode ? selectedNode.id : null
         );
         this.setState({
