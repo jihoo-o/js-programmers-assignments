@@ -56,6 +56,11 @@ body {
     content: '';
 }
 
+.Breadcrumb .nav-item,
+.Node {
+    cursor: pointer;
+}
+
 .Modal {
     z-index: 1;
     width: 100%;

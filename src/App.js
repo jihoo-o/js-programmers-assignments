@@ -9,7 +9,7 @@ const FILE = 'FILE';
 
 export default class App {
     state = {
-        isRoot: false,
+        isRoot: true,
         nodes: [],
         path: [],
         selectedFilePath: null,
@@ -23,6 +23,7 @@ export default class App {
             initialState: {
                 path: this.state.path,
             },
+            onPathClick: this.getPrevNodes,
         });
 
         this.nodes = new Nodes({
@@ -88,16 +89,23 @@ export default class App {
         });
     };
 
-    getPrevNodes = async () => {
-        const nodeId = this.state.path[this.state.path.length - 2];
-        const prevNodes = await api.getNodes(nodeId);
+    // go back to: length - 1 - n
+    getPrevNodes = async (n) => {
+        n = n ? n : this.state.path.length;
+        const nextPath = this.state.path.slice(
+            0,
+            this.state.path.length - 1 - n
+        );
+        const selectedNode =
+            nextPath.length > 0 ? nextPath[nextPath.length - 1] : null;
+        const nextNodes = await api.getNodes(
+            selectedNode ? selectedNode.id : null
+        );
         this.setState({
             ...this.state,
-            path: this.state.path.filter(
-                (node, idx) => idx !== this.state.path.length - 1
-            ),
-            isRoot: this.state.path.length === 1 ? true : false,
-            nodes: prevNodes,
+            path: nextPath,
+            isRoot: nextPath.length === 0 ? true : false,
+            nodes: nextNodes,
         });
     };
 

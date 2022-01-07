@@ -14,7 +14,7 @@ export default class Nodes {
             const $node = e.target.closest('.Node');
             if (!$node) return;
             if ($node.classList.contains('Prev')) {
-                onPrevClick();
+                onPrevClick(1);
                 return;
             }
             const { id } = $node.dataset;
