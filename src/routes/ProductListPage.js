@@ -1,9 +1,22 @@
+import ProductList from '../components/ProductList.js';
+import { api } from '../service/api.js';
+
 export default class ProductListPage {
     constructor({ $target }) {
-        console.log('ProductListPage');
+        this.productList = new ProductList({
+            $target,
+        });
+
+        this.fetchProducts();
     }
 
-    setState = () => {};
+    setState = (nextState) => {
+        this.state = nextState;
+        this.productList.setState(nextState);
+    };
 
-    render = () => {};
+    fetchProducts = async () => {
+        const products = await api.requestProducts();
+        this.setState(products);
+    };
 }
