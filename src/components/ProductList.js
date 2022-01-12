@@ -1,3 +1,5 @@
+import { routeChange } from '../router.js';
+
 export default class ProductList {
     constructor({ $target }) {
         const productListWrapper = document.createElement('div');
@@ -10,11 +12,19 @@ export default class ProductList {
         productListWrapper.appendChild(title);
         productListWrapper.appendChild(this.productList);
 
+        this.productList.addEventListener('click', (e) => {
+            const product = e.target.closest('li');
+            if (!product) return;
+            const { productid } = product.dataset;
+            routeChange(`/products/${productid}`);
+        });
+
         this.render();
     }
 
     setState = (nextState) => {
         this.state = nextState;
+        console.log(this.state);
         this.render();
     };
 
@@ -23,7 +33,7 @@ export default class ProductList {
             this.productList.innerHTML = this.state
                 .map(
                     ({ id, imageUrl, name, price }) => `
-        <li class="Product" data-id=${id}>
+        <li class="Product" data-productId=${id}>
             <img src="${imageUrl}">
             <div class="Product__info">
                 <div>${name}</div>
