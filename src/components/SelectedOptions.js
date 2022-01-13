@@ -1,5 +1,3 @@
-import { routeChange } from '../router.js';
-
 export default class SelectedOptions {
     constructor({ $target, initState, onOrderChange, onOrderBtnClick }) {
         this.$target = $target;
@@ -16,6 +14,13 @@ export default class SelectedOptions {
             }
             const { optionid: optionId } = target.closest('li').dataset;
             onOrderChange(optionId, value);
+        });
+
+        this.$target.addEventListener('click', (e) => {
+            // 선택된 옵션이 없을 경우
+            const target = e.target.closest('.OrderButton');
+            if (!target) return;
+            onOrderBtnClick();
         });
 
         this.render();

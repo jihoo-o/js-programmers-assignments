@@ -2,6 +2,8 @@
 import { routeChange } from '../router.js';
 import SelectedOptions from '../components/SelectedOptions.js';
 
+const LOCALSTORAGE_KEY = 'products_cart';
+
 export default class ProductDetail {
     constructor({ $target, initState }) {
         this.state = initState;
@@ -94,8 +96,17 @@ export default class ProductDetail {
     };
 
     handleOrderBtnClick = () => {
-        // localstorage에 저장
-        // 라우터 변경 -> /cart
+        const cart = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || [];
+        const newCart = [
+            ...cart,
+            ...this.state.selectedOptions.map((selectedOption) => ({
+                productId: this.state.product.id,
+                optionId: selectedOption.id,
+                quantity: selectedOption.count,
+            })),
+        ];
+        localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(newCart));
+        routeChange('/cart');
     };
 
     render = () => {
