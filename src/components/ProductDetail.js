@@ -1,27 +1,107 @@
 // 주문하기로 이동
 import { routeChange } from '../router.js';
+import SelectedOptions from '../components/SelectedOptions.js';
 
 export default class ProductDetail {
-    constructor({ $target }) {
-        this.productDetailWrapper = document.createElement('div');
-        this.productDetailWrapper.classList.add('ProductDetailPage');
+    constructor({ $target, initState }) {
+        this.state = initState;
+        this.$selectedOptions = null;
         this.selectedOptions = null;
 
-        $target.appendChild(this.productDetailWrapper);
+        this.productDetail = document.createElement('div');
+        this.productDetail.classList.add('ProductDetailPage');
+
+        $target.appendChild(this.productDetail);
+
+        this.productDetail.addEventListener('change', (e) => {
+            const target = e.target.closest('.ProductDetail__select');
+            if (!target || target.value === '') return;
+            this.handleOptionClick(parseInt(target.value, 10));
+        });
 
         this.render();
     }
 
     setState = (nextState) => {
+        /**
+         * {
+         *  product: ,
+         *  selectedOptions: [],
+         *  price: ,
+         * }
+         */
         this.state = nextState;
-        console.log(this.state);
         this.render();
+
+        if (this.selectedOptions) {
+            this.selectedOptions.setState({
+                product: this.state.product,
+                selectedOptions: this.state.selectedOptions,
+                price: this.state.price,
+            });
+        }
+    };
+
+    handleOptionClick = (selectedOptionId) => {
+        if (
+            this.state.selectedOptions.find(({ id }) => id === selectedOptionId)
+        ) {
+            return;
+        }
+        const selectedOption = this.state.product.productOptions.find(
+            ({ id }) => id === selectedOptionId
+        );
+
+        const updatedSelectedOptions = [
+            ...this.state.selectedOptions,
+            { ...selectedOption, count: 1 },
+        ];
+
+        const updatedPrice = updatedSelectedOptions.reduce(
+            (total, { price, count }) => total + price * count,
+            this.state.product.price
+        );
+
+        this.setState({
+            ...this.state,
+            selectedOptions: updatedSelectedOptions,
+            price: updatedPrice,
+        });
+    };
+
+    handleOrderChange = (optionId, newCount) => {
+        const updatedSelectedOptions = this.state.selectedOptions.map(
+            (option) => {
+                if (
+                    option.id !== parseInt(optionId, 10) ||
+                    newCount > option.stock
+                )
+                    return option;
+                return { ...option, count: newCount };
+            }
+        );
+
+        const updatedPrice = updatedSelectedOptions.reduce(
+            (total, { price, count }) => total + price * count,
+            this.state.product.price
+        );
+
+        this.setState({
+            ...this.state,
+            selectedOptions: updatedSelectedOptions,
+            price: updatedPrice,
+        });
+    };
+
+    handleOrderBtnClick = () => {
+        // localstorage에 저장
+        // 라우터 변경 -> /cart
     };
 
     render = () => {
-        if (this.state) {
-            const { id, imageUrl, name, price, productOptions } = this.state;
-            this.productDetailWrapper.innerHTML = `<h1>${name} 상품 정보</h1>
+        console.log('detail');
+        const { imageUrl, name, price, productOptions } = this.state.product;
+        this.productDetail.innerHTML = `<h1>${name} 상품 정보</h1>
                 <div class="ProductDetail">
                   <img src="${imageUrl}">
                   <div class="ProductDetail__info">
@@ -29,31 +109,36 @@ export default class ProductDetail {
                     <div class="ProductDetail__price">${price.toLocaleString(
                         'ko-KR'
                     )}</div>
-                    <select>
+                    <select class="ProductDetail__select">
+                    <option value=''>선택하세요.</option>
                       ${productOptions
                           .map(
-                              ({ name: optionName, price, stock }) => `
-                        <option ${stock === 0 ? 'disabled' : ''}>
+                              ({ name: optionName, price, stock, id }) => `
+                        <option ${stock === 0 ? 'disabled' : ''} value=${id}>
                         ${name} ${optionName} ${price > 0 ? price : ''}
                         </option>`
                           )
                           .join('')}
                     </select>
                     <div class="ProductDetail__selectedOptions">
-                      <h3>선택된 상품</h3>
-                      <ul>
-                        <li>
-                          커피잔 100개 번들 10,000원 <div><input type="number" value="10">개</div>
-                        </li>
-                        <li>
-                          커피잔 1000개 번들 15,000원 <div><input type="number" value="5">개</div>
-                        </li>
-                      </ul>
-                      <div class="ProductDetail__totalPrice">175,000원</div>
-                      <button class="OrderButton">주문하기</button>
                     </div>
                   </div>
                 </div>`;
-        }
+
+        // if (!this.selectedOptions) { --> 렌더링 안되는 이유
+        this.$selectedOptions = document.querySelector(
+            '.ProductDetail__selectedOptions'
+        );
+        this.selectedOptions = new SelectedOptions({
+            $target: this.$selectedOptions,
+            initState: {
+                product: this.state.product,
+                selectedOptions: this.state.selectedOptions,
+                price: this.state.price,
+            },
+            onOrderChange: this.handleOrderChange,
+            onOrderBtnClick: this.handleOrderBtnClick,
+        });
+        // }
     };
 }

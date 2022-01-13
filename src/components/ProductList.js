@@ -30,6 +30,7 @@ export default class ProductList {
 
     render = () => {
         if (this.state) {
+            // title, ul도 innerHTML로 추가
             this.productList.innerHTML = this.state
                 .map(
                     ({ id, imageUrl, name, price }) => `

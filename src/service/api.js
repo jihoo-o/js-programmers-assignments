@@ -132,8 +132,8 @@ export const api = {
                     {
                         id: 24,
                         name: '10개 묶음',
-                        price: 0,
-                        stock: 0,
+                        price: 100,
+                        stock: 10,
                         created_at: '2021-08-23T23:03:04.873Z',
                         updated_at: '2021-08-23T23:03:04.879Z',
                     },

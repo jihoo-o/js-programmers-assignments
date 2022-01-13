@@ -3,18 +3,42 @@ import { api } from '../service/api.js';
 
 export default class ProductDetailPage {
     constructor({ $target, productId }) {
-        this.productDetail = new ProductDetail({ $target });
-
-        this.fetchProduct(productId);
+        this.state = {
+            productId,
+            product: null,
+            selectedOptions: [],
+            price: 0,
+        };
+        this.$target = $target;
+        this.productDetail = null;
+        this.fetchProduct();
     }
 
     setState = (nextState) => {
         this.state = nextState;
-        this.productDetail.setState(nextState);
+        this.render();
     };
 
-    fetchProduct = async (productId) => {
+    fetchProduct = async () => {
+        const { productId } = this.state;
         const product = await api.requestProduct(productId);
-        this.setState(product);
+        this.setState({
+            ...this.state,
+            product,
+            price: product.price,
+        });
+    };
+
+    render = () => {
+        if (!this.productDetail) {
+            this.productDetail = new ProductDetail({
+                $target: this.$target,
+                initState: {
+                    product: this.state.product,
+                    selectedOptions: this.state.selectedOptions,
+                    price: this.state.price,
+                },
+            });
+        }
     };
 }
