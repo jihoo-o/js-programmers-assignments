@@ -3,7 +3,7 @@ import { storage } from '../storage.js';
 
 const LOCALSTORAGE_KEY = 'products_cart';
 
-export default class CartComponent {
+export default class Cart {
     constructor({ $target, initState }) {
         this.state = initState;
         this.$target = $target;

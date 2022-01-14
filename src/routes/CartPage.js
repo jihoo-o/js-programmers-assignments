@@ -1,4 +1,4 @@
-import CartComponent from '../components/CartComponent.js';
+import Cart from '../components/Cart.js';
 import { routeChange } from '../router.js';
 import { api } from '../service/api.js';
 import { storage } from '../storage.js';
@@ -63,7 +63,7 @@ export default class CartPage {
             `;
 
             this.$cartPage = document.querySelector('.Cart');
-            this.cartComponent = new CartComponent({
+            this.cartComponent = new Cart({
                 $target: this.$cartPage,
                 initState: { products: this.state },
             });
