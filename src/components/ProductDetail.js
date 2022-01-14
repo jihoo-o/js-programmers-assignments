@@ -5,6 +5,7 @@ const LOCALSTORAGE_KEY = 'products_cart';
 
 export default class ProductDetail {
     constructor({ $target, initState }) {
+        this.initialized = false;
         this.state = initState;
         this.$selectedOptions = null;
         this.selectedOptions = null;
@@ -110,46 +111,51 @@ export default class ProductDetail {
     };
 
     render = () => {
-        console.log('detail');
-        const { imageUrl, name, price, productOptions } = this.state.product;
-        this.productDetail.innerHTML = `<h1>${name} 상품 정보</h1>
-                <div class="ProductDetail">
-                  <img src="${imageUrl}">
-                  <div class="ProductDetail__info">
-                    <h2>${name}</h2>
-                    <div class="ProductDetail__price">${price.toLocaleString(
-                        'ko-KR'
-                    )}</div>
-                    <select class="ProductDetail__select">
-                    <option value=''>선택하세요.</option>
-                      ${productOptions
-                          .map(
-                              ({ name: optionName, price, stock, id }) => `
-                        <option ${stock === 0 ? 'disabled' : ''} value=${id}>
-                        ${name} ${optionName} ${price > 0 ? price : ''}
-                        </option>`
-                          )
-                          .join('')}
-                    </select>
-                    <div class="ProductDetail__selectedOptions">
-                    </div>
-                  </div>
-                </div>`;
+        if (!this.initialized) {
+            const { imageUrl, name, price, productOptions } =
+                this.state.product;
+            this.productDetail.innerHTML = `<h1>${name} 상품 정보</h1>
+                    <div class="ProductDetail">
+                      <img src="${imageUrl}">
+                      <div class="ProductDetail__info">
+                        <h2>${name}</h2>
+                        <div class="ProductDetail__price">${price.toLocaleString(
+                            'ko-KR'
+                        )}</div>
+                        <select class="ProductDetail__select">
+                        <option value=''>선택하세요.</option>
+                          ${productOptions
+                              .map(
+                                  ({ name: optionName, price, stock, id }) => `
+                            <option ${
+                                stock === 0 ? 'disabled' : ''
+                            } value=${id}>
+                            ${name} ${optionName} ${price > 0 ? price : ''}
+                            </option>`
+                              )
+                              .join('')}
+                        </select>
+                        <div class="ProductDetail__selectedOptions">
+                        </div>
+                      </div>
+                    </div>`;
 
-        // if (!this.selectedOptions) { --> 렌더링 안되는 이유
-        this.$selectedOptions = document.querySelector(
-            '.ProductDetail__selectedOptions'
-        );
-        this.selectedOptions = new SelectedOptions({
-            $target: this.$selectedOptions,
-            initState: {
-                product: this.state.product,
-                selectedOptions: this.state.selectedOptions,
-                price: this.state.price,
-            },
-            onOrderChange: this.handleOrderChange,
-            onOrderBtnClick: this.handleOrderBtnClick,
-        });
-        // }
+            // if (!this.selectedOptions) { --> 렌더링 안되는 이유
+            this.$selectedOptions = document.querySelector(
+                '.ProductDetail__selectedOptions'
+            );
+            this.selectedOptions = new SelectedOptions({
+                $target: this.$selectedOptions,
+                initState: {
+                    product: this.state.product,
+                    selectedOptions: this.state.selectedOptions,
+                    price: this.state.price,
+                },
+                onOrderChange: this.handleOrderChange,
+                onOrderBtnClick: this.handleOrderBtnClick,
+            });
+            // }
+            this.initialized = true;
+        }
     };
 }
