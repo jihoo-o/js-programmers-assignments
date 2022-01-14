@@ -2,7 +2,6 @@ export default class SelectedOptions {
     constructor({ $target, initState, onOrderChange, onOrderBtnClick }) {
         this.$target = $target;
         this.state = initState;
-        console.log('constructor -> ');
 
         this.$target.addEventListener('change', (e) => {
             const target = e.target.closest('input');

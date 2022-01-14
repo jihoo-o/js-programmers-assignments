@@ -1,5 +1,6 @@
 import { routeChange } from '../router.js';
 import SelectedOptions from '../components/SelectedOptions.js';
+import { storage } from '../storage.js';
 
 const LOCALSTORAGE_KEY = 'products_cart';
 
@@ -96,17 +97,18 @@ export default class ProductDetail {
     };
 
     handleOrderBtnClick = () => {
-        const cart = localStorage.getItem(LOCALSTORAGE_KEY);
-        const parsedCart = cart ? JSON.parse(cart) : [];
+        // const cart = localStorage.getItem(LOCALSTORAGE_KEY);
+        const cart = storage.getItem(LOCALSTORAGE_KEY);
+        // const parsedCart = cart ? JSON.parse(cart) : [];
         const newCart = [
-            ...parsedCart,
+            ...cart,
             ...this.state.selectedOptions.map((selectedOption) => ({
                 productId: this.state.product.id,
                 optionId: selectedOption.id,
                 quantity: selectedOption.count,
             })),
         ];
-        localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(newCart));
+        storage.setItem(LOCALSTORAGE_KEY, newCart);
         routeChange('/cart');
     };
 

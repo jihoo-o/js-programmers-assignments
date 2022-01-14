@@ -1,5 +1,6 @@
 import CartComponent from '../components/CartComponent.js';
 import { api } from '../service/api.js';
+import { storage } from '../storage.js';
 
 const LOCALSTORAGE_KEY = 'products_cart';
 
@@ -14,16 +15,14 @@ export default class CartPage {
 
     setState = (nextState) => {
         this.state = nextState;
-        console.log(this.state);
         this.render();
     };
 
     fetchProducts = async () => {
-        const cart = localStorage.getItem(LOCALSTORAGE_KEY);
-        if (!cart) return;
-        const parsedCart = JSON.parse(cart);
+        const cart = storage.getItem(LOCALSTORAGE_KEY);
+        if (cart.length === 0) return;
         const products = await Promise.all(
-            parsedCart.map(async (cartItem) => {
+            cart.map(async (cartItem) => {
                 const product = await api.requestProduct(cartItem.productId);
                 const selectedOption = product.productOptions.find((option) => {
                     return option.id === cartItem.optionId;

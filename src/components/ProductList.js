@@ -24,7 +24,6 @@ export default class ProductList {
 
     setState = (nextState) => {
         this.state = nextState;
-        console.log(this.state);
         this.render();
     };
 

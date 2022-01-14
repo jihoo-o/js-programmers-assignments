@@ -1,4 +1,5 @@
 import { routeChange } from '../router.js';
+import { storage } from '../storage.js';
 
 const LOCALSTORAGE_KEY = 'products_cart';
 
@@ -33,7 +34,7 @@ export default class CartComponent {
 
     handleOrderClick = () => {
         window.alert('주문되었습니다.');
-        localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify([]));
+        storage.setItem(LOCALSTORAGE_KEY, []);
         routeChange('/');
     };
 
