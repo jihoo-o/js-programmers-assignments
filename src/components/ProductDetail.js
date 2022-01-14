@@ -1,4 +1,3 @@
-// 주문하기로 이동
 import { routeChange } from '../router.js';
 import SelectedOptions from '../components/SelectedOptions.js';
 
@@ -96,9 +95,10 @@ export default class ProductDetail {
     };
 
     handleOrderBtnClick = () => {
-        const cart = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)) || [];
+        const cart = localStorage.getItem(LOCALSTORAGE_KEY);
+        const parsedCart = cart ? JSON.parse(cart) : [];
         const newCart = [
-            ...cart,
+            ...parsedCart,
             ...this.state.selectedOptions.map((selectedOption) => ({
                 productId: this.state.product.id,
                 optionId: selectedOption.id,
